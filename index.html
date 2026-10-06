@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>SiP-PKL-Mu - Sistem Informasi PKL SMK Muhim</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- MODAL NOTIFIKASI DINAMIS -->
+  <div id="modalAlert" class="modal-overlay hidden">
+    <div class="modal-box">
+      <div id="modalIcon" class="status-icon icon-success">✓</div>
+      <h4 id="modalTitle" style="font-size:12pt; font-weight:700; margin-bottom:6px;">Berhasil!</h4>
+      <p id="modalMsg" style="font-size:9pt; color:#64748b; margin-bottom:16px;"></p>
+      <button class="btn" onclick="closeModal('modalAlert')">Tutup</button>
+    </div>
+  </div>
+
+  <!-- MODAL DETAIL REKAP PRESENSI HARIAN -->
+  <div id="modalDetail" class="modal-overlay hidden">
+    <div class="modal-box">
+      <h4 style="font-size:11pt; font-weight:700; margin-bottom:12px; color:#0f172a;">DETAIL PRESENSI HARIAN</h4>
+      <div class="detail-row"><span class="label">Tanggal</span><span class="val" id="detTgl">-</span></div>
+      <div class="detail-row"><span class="label">Status Presensi</span><span class="val" id="detStatus">-</span></div>
+      <div class="detail-row"><span class="label">Jam Masuk</span><span class="val" id="detMasuk">-</span></div>
+      <div class="detail-row"><span class="label">Jam Pulang</span><span class="val" id="detPulang">-</span></div>
+      <div class="detail-row" style="background:#f8fafc; padding:8px; border-radius:6px; margin-top:6px;">
+        <span class="label" style="font-weight:bold; color:#0f172a;">Durasi PKL</span>
+        <span class="val" id="detDurasi" style="color:#16a34a; font-weight:700;">-</span>
+      </div>
+      
+      <div id="detLokasiContainer" class="hidden" style="margin-top:12px;">
+        <a id="btnGmaps" href="#" target="_blank" class="btn btn-outline" style="font-size:8.5pt; padding:8px; text-decoration:none;">
+          📍 Buka Titik Lokasi di Google Maps
+        </a>
+      </div>
+
+      <button class="btn btn-outline" style="margin-top:16px;" onclick="closeModal('modalDetail')">TUTUP</button>
+    </div>
+  </div>
+
+  <!-- MODAL DETAIL KALENDER JURNAL -->
+  <div id="modalDetailJurnal" class="modal-overlay hidden">
+    <div class="modal-box">
+      <h4 style="font-size:11pt; font-weight:800; margin-bottom:10px; color:#0f172a;">DETAIL JURNAL KEGIATAN</h4>
+      <div class="detail-row"><span class="label">Tanggal</span><span class="val" id="detJurnalTgl">-</span></div>
+      <div class="detail-row"><span class="label">Status Jurnal</span><span class="val" id="detJurnalStatus">-</span></div>
+      <div class="detail-row"><span class="label">Divisi / Dept.</span><span class="val" id="detJurnalDivisi">-</span></div>
+      
+      <div style="text-align:left; margin-top:10px;">
+        <span style="font-size:8pt; font-weight:700; color:#64748b; text-transform:uppercase;">Uraian Pekerjaan:</span>
+        <div id="detJurnalUraian" style="background:#f8fafc; border:1px solid #e2e8f0; padding:10px; border-radius:10px; font-size:8.5pt; margin-top:4px; max-height:120px; overflow-y:auto;">-</div>
+      </div>
+
+      <button class="btn btn-outline" style="margin-top:16px;" onclick="closeModal('modalDetailJurnal')">TUTUP</button>
+    </div>
+  </div>
+
+  <!-- MODAL DETAIL KALENDER SHOLAT -->
+  <div id="modalDetailSholat" class="modal-overlay hidden">
+    <div class="modal-box">
+      <h4 style="font-size:11pt; font-weight:800; margin-bottom:10px; color:#0f172a;">DETAIL MUTABA'AH SHOLAT</h4>
+      <div class="detail-row"><span class="label">Tanggal</span><span class="val" id="detSholatTgl">-</span></div>
+      <div class="detail-row"><span class="label">Status Laporan</span><span class="val" id="detSholatStatus">-</span></div>
+      
+      <div style="text-align:left; margin-top:12px;">
+        <span style="font-size:8pt; font-weight:700; color:#64748b; text-transform:uppercase;">Checklist Sholat Harian:</span>
+        <div class="sholat-badge-grid" id="detSholatGrid"></div>
+      </div>
+
+      <button class="btn btn-outline" style="margin-top:16px;" onclick="closeModal('modalDetailSholat')">TUTUP</button>
+    </div>
+  </div>
+
+  <!-- HEADER DENGAN ACCENT GOLD -->
+  <div class="header">
+    <h2>SiP-PKL-Mu</h2>
+    <p class="app-subtitle">Sistem Presensi PKL SMK Muhim</p>
+    <div id="userDisplay" class="user-badge hidden"></div>
+    <div class="header-accent-line"></div>
+  </div>
+
+  <div class="container">
+    
+    <!-- 1. FORM LOGIN -->
+    <div class="card" id="loginSection">
+      <h3>LOGIN SISWA</h3>
+      <div class="form-group">
+        <label>NIS SISWA</label>
+        <input type="number" id="loginNis" placeholder="Masukkan NIS Anda">
+      </div>
+      <div class="form-group">
+        <label>PIN</label>
+        <div class="pin-container">
+          <input type="password" id="loginPin" placeholder="Default: garjaya">
+          <span class="toggle-pin" onclick="togglePin('loginPin', this)">
+            <svg class="eye-open" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+            <svg class="eye-closed hidden" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+          </span>
+        </div>
+      </div>
+      <button class="btn" id="btnLogin" onclick="processLogin()">MASUK SYSTEM</button>
+    </div>
+
+    <!-- 2. DASHBOARD NAVIGASI -->
+    <div id="mainDashboard" class="hidden">
+      
+      <!-- MULTI-COLOR PILL NAVIGATION (6 TAB SIMETRIS) -->
+      <div class="nav-grid">
+        <div class="nav-card active" data-tab="tabPresensi" onclick="switchTab('tabPresensi', this)">📷 Presensi</div>
+        <div class="nav-card" data-tab="tabJurnal" onclick="switchTab('tabJurnal', this)">📝 Jurnal</div>
+        <div class="nav-card" data-tab="tabSholat" onclick="switchTab('tabSholat', this)">🕌 Sholat</div>
+        <div class="nav-card" data-tab="tabIzin" onclick="switchTab('tabIzin', this)">✉️️ Perizinan</div>
+        <div class="nav-card" data-tab="tabIdentitas" onclick="switchTab('tabIdentitas', this)">👤 Profil Saya</div>
+        <div class="nav-card" data-tab="tabPdf" onclick="switchTab('tabPdf', this)">📄 Cetak PDF</div>
+      </div>
+
+      <!-- TAB PRESENSI HARIAN -->
+      <div id="tabPresensi" class="card tab-content">
+        <h3>PRESENSI HARIAN</h3>
+        
+        <div id="statusBanner" class="status-banner banner-warning">
+          <span class="icon">⚠️</span>
+          <div>
+            <strong id="bannerTitle">Status Hari Ini:</strong>
+            <div id="bannerSub">Memuat status presensi...</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>FOTO PRESENSI MASUK (LIVE CAMERA)</label>
+          <input type="file" id="fotoMasuk" accept="image/*" capture="user" style="display:none;" onchange="handleFileSelected(this)">
+          
+          <button type="button" class="btn btn-outline btn-block" onclick="document.getElementById('fotoMasuk').click()" id="btnKameraLabel" style="background:#f8fafc; border:2px dashed #cbd5e1; color:#334155; font-weight:600; padding:12px;">
+            📸 Ambil Foto Kamera Sekarang
+          </button>
+          
+          <small id="infoFileFoto" style="color: #64748b; font-size: 0.75rem; display: block; margin-top: 6px; text-align: center;">*Belum ada foto yang diambil.</small>
+          <input type="hidden" id="fotoMasukBase64">
+        </div>
+        <button class="btn btn-success btn-block" id="btnPresensiMasuk" onclick="doPresensiMasuk()" style="margin-bottom: 10px;">CHECK-IN MASUK</button>
+        
+        <hr style="margin: 16px 0; border: 0; border-top: 1px solid #e2e8f0;">
+        
+        <button class="btn btn-warning btn-block" id="btnPresensiPulang" onclick="doPresensiPulang()">CHECK-OUT PULANG (1-KLIK)</button>
+
+        <hr style="margin: 20px 0; border: 0; border-top: 1px dashed #cbd5e1;">
+
+        <h4 style="font-size:10pt; font-weight:800; color:#0f172a; margin-bottom:10px;">REKAP KALENDER PRESENSI</h4>
+        <div style="display:flex; gap:8px; margin-bottom:12px;">
+          <select id="filterBulan" onchange="loadRekapData()" style="flex:2; padding:8px; font-size:9pt; border-radius:8px; border:1px solid #cbd5e1;">
+            <option value="1">Januari</option><option value="2">Februari</option><option value="3">Maret</option>
+            <option value="4">April</option><option value="5">Mei</option><option value="6">Juni</option>
+            <option value="7">Juli</option><option value="8">Agustus</option><option value="9">September</option>
+            <option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
+          </select>
+          <select id="filterTahun" onchange="loadRekapData()" style="flex:1; padding:8px; font-size:9pt; border-radius:8px; border:1px solid #cbd5e1;">
+            <option value="2026">2026</option><option value="2027">2027</option>
+          </select>
+        </div>
+
+        <div class="summary-grid">
+          <div class="summary-box" style="border-color:#bbf7d0; background:#f0fdf4;"><div class="val" id="sumHadir" style="color:#15803d;">0</div><div class="lbl">Hadir</div></div>
+          <div class="summary-box" style="border-color:#fde68a; background:#fffbeb;"><div class="val" id="sumIzin" style="color:#b45309;">0</div><div class="lbl">Izin/Sakit</div></div>
+          <div class="summary-box" style="border-color:#bae6fd; background:#f0f9ff;"><div class="val" id="sumLiburDudika" style="color:#0369a1;">0</div><div class="lbl">Libur DUDIKA</div></div>
+          <div class="summary-box" style="border-color:#cbd5e1; background:#f8fafc;"><div class="val" id="sumLiburUmum" style="color:#475569;">0</div><div class="lbl">Libur Umum</div></div>
+          <div class="summary-box" style="border-color:#fca5a5; background:#fef2f2;"><div class="val" id="sumAlfa" style="color:#b91c1c;">0</div><div class="lbl">Alfa</div></div>
+          <div class="summary-box" style="border-color:#e2e8f0; background:#ffffff;"><div class="val" id="sumJam" style="color:#0f172a;">0 Jm</div><div class="lbl">Total Jam</div></div>
+        </div>
+
+        <div id="calendarContainer" class="calendar-grid"></div>
+        
+        <div class="legend-container">
+          <div class="legend-item"><div class="legend-dot" style="background:#16a34a;"></div> Hadir</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#d97706;"></div> Izin/Sakit</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#0284c7;"></div> Libur DUDIKA</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#64748b;"></div> Libur Umum</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#ef4444;"></div> Alfa</div>
+        </div>
+      </div>
+
+      <!-- TAB JURNAL KEGIATAN -->
+      <div id="tabJurnal" class="card tab-content hidden">
+        <h3>JURNAL KEGIATAN HARIAN</h3>
+        <div class="form-group">
+          <label>TANGGAL KEGIATAN</label>
+          <input type="date" id="jurnalTanggal">
+        </div>
+        <div class="form-group">
+          <label>DIVISI / DEPT. / BAGIAN</label>
+          <input type="text" id="jurnalDivisi" placeholder="Contoh: Bengkel / IT Support">
+        </div>
+        <div class="form-group">
+          <label>URAIAN JOB / KEGIATAN</label>
+          <textarea id="jurnalUraian" rows="4" placeholder="Jelaskan pekerjaan harianmu..."></textarea>
+        </div>
+        <button class="btn" id="btnSimpanJurnal" onclick="doSimpanJurnal()">SIMPAN / UPDATE JURNAL</button>
+
+        <hr style="margin: 20px 0; border: 0; border-top: 1px dashed #cbd5e1;">
+
+        <h4 style="font-size:10pt; font-weight:800; color:#0f172a; margin-bottom:10px;">REKAP KALENDER JURNAL</h4>
+        <div style="display:flex; gap:8px; margin-bottom:12px;">
+          <select id="filterBulanJurnal" onchange="loadRekapJurnalKalender()" style="flex:2; padding:8px; font-size:9pt; border-radius:8px; border:1px solid #cbd5e1;">
+            <option value="1">Januari</option><option value="2">Februari</option><option value="3">Maret</option>
+            <option value="4">April</option><option value="5">Mei</option><option value="6">Juni</option>
+            <option value="7">Juli</option><option value="8">Agustus</option><option value="9">September</option>
+            <option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
+          </select>
+          <select id="filterTahunJurnal" onchange="loadRekapJurnalKalender()" style="flex:1; padding:8px; font-size:9pt; border-radius:8px; border:1px solid #cbd5e1;">
+            <option value="2026">2026</option><option value="2027">2027</option>
+          </select>
+        </div>
+
+        <div id="calendarJurnalContainer" class="calendar-grid"></div>
+
+        <div class="legend-container">
+          <div class="legend-item"><div class="legend-dot" style="background:#16a34a;"></div> Tervalidasi</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#d97706;"></div> Pending</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#cbd5e1;"></div> Belum Mengisi</div>
+        </div>
+      </div>
+
+      <!-- TAB SHOLAT -->
+      <div id="tabSholat" class="card tab-content hidden">
+        <h3>MUTABA'AH SHOLAT HARIAN</h3>
+        <div class="form-group">
+          <label>TANGGAL</label>
+          <input type="date" id="sholatTanggal">
+        </div>
+        
+        <div class="sholat-row"><span>Sholat Subuh</span><input type="checkbox" id="shlSubuh"></div>
+        <div class="sholat-row"><span>Sholat Dhuha</span><input type="checkbox" id="shlDhuha"></div>
+        <div class="sholat-row"><span>Sholat Dzuhur</span><input type="checkbox" id="shlDzuhur"></div>
+        <div class="sholat-row"><span>Sholat 'Asar</span><input type="checkbox" id="shlAshar"></div>
+        <div class="sholat-row"><span>Sholat Maghrib</span><input type="checkbox" id="shlMaghrib"></div>
+        <div class="sholat-row"><span>Sholat Isya'</span><input type="checkbox" id="shlIsya"></div>
+        
+        <button class="btn btn-success" id="btnSimpanSholat" style="margin-top:16px;" onclick="doSimpanSholat()">SIMPAN MUTABA'AH</button>
+
+        <hr style="margin: 20px 0; border: 0; border-top: 1px dashed #cbd5e1;">
+
+        <h4 style="font-size:10pt; font-weight:800; color:#0f172a; margin-bottom:10px;">REKAP KALENDER SHOLAT</h4>
+        <div style="display:flex; gap:8px; margin-bottom:12px;">
+          <select id="filterBulanSholat" onchange="loadRekapSholatKalender()" style="flex:2; padding:8px; font-size:9pt; border-radius:8px; border:1px solid #cbd5e1;">
+            <option value="1">Januari</option><option value="2">Februari</option><option value="3">Maret</option>
+            <option value="4">April</option><option value="5">Mei</option><option value="6">Juni</option>
+            <option value="7">Juli</option><option value="8">Agustus</option><option value="9">September</option>
+            <option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option>
+          </select>
+          <select id="filterTahunSholat" onchange="loadRekapSholatKalender()" style="flex:1; padding:8px; font-size:9pt; border-radius:8px; border:1px solid #cbd5e1;">
+            <option value="2026">2026</option><option value="2027">2027</option>
+          </select>
+        </div>
+
+        <div id="calendarSholatContainer" class="calendar-grid"></div>
+
+        <div class="legend-container">
+          <div class="legend-item"><div class="legend-dot" style="background:#16a34a;"></div> Sudah Mengisi</div>
+          <div class="legend-item"><div class="legend-dot" style="background:#cbd5e1;"></div> Belum Mengisi</div>
+        </div>
+      </div>
+
+      <!-- TAB PERIZINAN -->
+      <div id="tabIzin" class="card tab-content hidden">
+        <h3>PENGAJUAN IZIN / SAKIT / LIBUR / SUSULAN</h3>
+        <div class="form-group">
+          <label>TANGGAL</label>
+          <input type="date" id="izinTanggal">
+        </div>
+        <div class="form-group">
+          <label>KATEGORI PENGAJUAN</label>
+          <select id="izinStatus" onchange="toggleFormIzinFoto()">
+            <option value="Izin">Izin (Perlu Foto Bukti)</option>
+            <option value="Sakit">Sakit (Perlu Foto Surat Dokter)</option>
+            <option value="Libur DUDIKA">Libur DUDIKA / Shift Libur</option>
+            <option value="Susulan">Presensi Susulan</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>ALASAN / CATATAN</label>
+          <textarea id="izinCatatan" rows="3" placeholder="Jelaskan alasan izin/sakit/libur shift..."></textarea>
+        </div>
+        <div class="form-group" id="groupFotoIzin">
+          <label>FOTO SURAT DOKTER / BUKTI (WAJIB UNTUK IZIN/SAKIT)</label>
+          <input type="file" id="fotoIzin" accept="image/*">
+        </div>
+        <button class="btn btn-warning" id="btnSubmitIzin" onclick="doSubmitIzin()">KIRIM PENGAJUAN</button>
+      </div>
+
+      <!-- TAB IDENTITAS SISWA -->
+      <div id="tabIdentitas" class="tab-content hidden">
+        <div class="digital-pass">
+          <div class="pass-header">
+            <span class="pass-title">IDENTITAS PESERTA PKL</span>
+            <span class="pass-badge">SMK MUHIM</span>
+          </div>
+          <div class="pass-row"><span class="label">Nama Lengkap</span><span class="val" id="idNama">-</span></div>
+          <div class="pass-row"><span class="label">Tempat, Tgl Lahir</span><span class="val" id="idTtl">-</span></div>
+          <div class="pass-row"><span class="label">NIS / NISN</span><span class="val" id="idNisNisn">-</span></div>
+          <div class="pass-row"><span class="label">Kelas Asli / KBM</span><span class="val" id="idKelas">-</span></div>
+          <div class="pass-row"><span class="label">Program Keahlian</span><span class="val" id="idProg">-</span></div>
+          <div class="pass-row"><span class="label">Konsentrasi Keahlian</span><span class="val" id="idKons">-</span></div>
+          <div class="pass-row"><span class="label">Periode PKL</span><span class="val" id="idPeriode">-</span></div>
+          <div class="pass-row"><span class="label">Tempat DUDIKA</span><span class="val" id="idDudika">-</span></div>
+          <div class="pass-row"><span class="label">Alamat DUDIKA</span><span class="val" id="idAlamatDudika">-</span></div>
+          <div class="pass-row"><span class="label">Guru Pembimbing</span><span class="val" id="idGuru">-</span></div>
+          
+          <div style="margin-top:18px; border-top: 1px rgba(255,255,255,0.2) dashed; padding-top:14px;">
+            <a id="btnWaGuru" href="#" target="_blank" class="btn btn-success" style="text-decoration:none; background:#22c55e; border:none; color:#fff;">
+              💬 CHAT WHATSAPP GURU PEMBIMBING
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB CETAK PDF -->
+      <div id="tabPdf" class="card tab-content hidden">
+        <h3>CETAK LAPORAN A4</h3>
+        <div class="form-group">
+          <label>DARI TANGGAL</label>
+          <input type="date" id="pdfStart">
+        </div>
+        <div class="form-group">
+          <label>SAMPAI TANGGAL</label>
+          <input type="date" id="pdfEnd">
+        </div>
+        
+        <button class="btn" id="btnCetakPdfJurnal" style="margin-bottom:12px;" onclick="doCetakPdf()">📄 DOWNLOAD LAPORAN JURNAL</button>
+        <button class="btn btn-warning" id="btnCetakPdfPresensi" onclick="doCetakPdfPresensi()">📊 DOWNLOAD REKAP PRESENSI</button>
+      </div>
+
+      <!-- KARTU GANTI PIN -->
+      <div class="card" style="margin-top:20px;">
+        <h3>PENGATURAN AKUN</h3>
+        <button class="btn btn-outline" onclick="toggleGantiPinSection()">🔑 GANTI PIN SAYA</button>
+        
+        <div id="gantiPinForm" class="hidden" style="margin-top:15px; border-top: 1px dashed #cbd5e1; padding-top: 15px;">
+          <div class="form-group">
+            <label>PIN LAMA</label>
+            <div class="pin-container">
+              <input type="password" id="pinLama" placeholder="Masukkan PIN Lama">
+              <span class="toggle-pin" onclick="togglePin('pinLama', this)">
+                <svg class="eye-open" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                <svg class="eye-closed hidden" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+              </span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>PIN BARU</label>
+            <div class="pin-container">
+              <input type="password" id="pinBaru" placeholder="Masukkan PIN Baru">
+              <span class="toggle-pin" onclick="togglePin('pinBaru', this)">
+                <svg class="eye-open" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                <svg class="eye-closed hidden" viewBox="0 0 24 24"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>
+              </span>
+            </div>
+          </div>
+          <button class="btn btn-success" id="btnGantiPin" onclick="doGantiPin()">SIMPAN PIN BARU</button>
+        </div>
+      </div>
+
+      <button class="btn btn-danger" style="margin-top:10px;" onclick="doLogout()">LOGOUT</button>
+    </div>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
