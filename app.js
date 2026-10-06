@@ -5,7 +5,7 @@
  */
 
 // ⚠️ GANTI DENGAN URL WEB APP APPS SCRIPT ANDA (/exec)
-const APPS_SCRIPT_URL = "MASUKKAN_URL_WEB_APP_APPS_SCRIPT_ANDA_DISINI";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz-BaHefZvQ_wFcyFPvzf4Ia7POG7llKGu8ENdSTe_WidXW0w2cA1VBTFUocMFP0-iG/exec";
 
 let currentUser = null;
 let rawPresensiData = {};
