@@ -299,3 +299,21 @@ header, .header, #header, nav.top-nav {
 .card, .box, .container-box, div[style*="border"] {
   border-radius: 14px !important;
 }
+
+/* ==========================================================
+   SiP-PKL-Mu: Step 2.1 - Universal Tab & Button Enhancement
+   ========================================================== */
+
+/* Menyasar semua tombol yang ada di area navigasi atau menu */
+nav button, nav a, .menu button, .menu a, [class*="tab"] {
+  border-radius: 16px !important;
+  transition: all 0.2s ease-in-out !important;
+  font-weight: 600 !important;
+}
+
+/* Membuat tombol menu yang sedang aktif / terpilih langsung berubah jadi hijau Muhammadiyah modern */
+nav button.active, nav a.active, .menu button.active, .menu a.active, [class*="tab"].active {
+  background-color: #15803d !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 12px rgba(21, 128, 61, 0.3) !important;
+}
