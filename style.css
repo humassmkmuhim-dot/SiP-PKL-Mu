@@ -317,3 +317,78 @@ nav button.active, nav a.active, .menu button.active, .menu a.active, [class*="t
   color: #ffffff !important;
   box-shadow: 0 4px 12px rgba(21, 128, 61, 0.3) !important;
 }
+
+/* ==========================================================
+   SiP-PKL-Mu: Step 3 - Significant Enterprise Visual Upgrade
+   ========================================================== */
+
+/* 1. Mengubah seluruh kotak/kartu konten jadi gaya Modern Card (Clean & Rounded) */
+div, section, form, .card, .panel, .box {
+  /* Memperhalus lengkungan sudut secara universal tanpa merusak layout */
+  border-radius: 12px;
+}
+
+/* Kotak Kontainer Utama (Card) diberi bayangan elegan */
+.card, .box, .panel, form {
+  background: #ffffff !important;
+  border: 1px solid #e2e8f0 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.04), 0 2px 4px -1px rgba(0, 0, 0, 0.02) !important;
+  padding: 18px !important;
+  margin-bottom: 14px !important;
+  transition: all 0.25s ease;
+}
+
+/* 2. Tombol Utama (Kirim, Simpan, Proses) Jadi Sangat Profesional */
+button, input[type="submit"], input[type="button"], .btn {
+  background-color: #15803d !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 12px !important;
+  padding: 12px 18px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.3px;
+  box-shadow: 0 4px 12px rgba(21, 128, 61, 0.25) !important;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+button:hover, input[type="submit"]:hover, input[type="button"]:hover, .btn:hover {
+  background-color: #166534 !important;
+  box-shadow: 0 6px 16px rgba(21, 128, 61, 0.35) !important;
+  transform: translateY(-1.5px);
+}
+
+button:active, input[type="submit"]:active {
+  transform: translateY(0);
+}
+
+/* 3. Kotak Input & Form Pilihan (Dropdown) yang Lebih Lega & Nyaman */
+input[type="text"], 
+input[type="number"], 
+input[type="date"], 
+input[type="password"], 
+input[type="email"],
+select, 
+textarea {
+  background-color: #f8fafc !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 10px !important;
+  padding: 11px 14px !important;
+  font-size: 14px !important;
+  color: #1e293b !important;
+  transition: all 0.2s ease !important;
+}
+
+input:focus, select:focus, textarea:focus {
+  background-color: #ffffff !important;
+  border-color: #15803d !important;
+  box-shadow: 0 0 0 4px rgba(21, 128, 61, 0.12) !important;
+  outline: none !important;
+}
+
+/* 4. Judul & Teks Penegas (Heading) Jadi Lebih Tegas Berwibawa */
+h1, h2, h3, h4, .title, .header-title {
+  color: #0f172a !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.3px;
+}
