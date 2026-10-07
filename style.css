@@ -267,6 +267,34 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 0 0 0 3px rgba(21, 128, 61, 0.15) !important;
 }
 
+/* ==========================================================
+   SiP-PKL-Mu: Step 2 - Modernizing Header & Navigation Tabs
+   ========================================================== */
+
+/* 1. Header Atas Lebih Elegan & Bersih */
+header, .header, #header, nav.top-nav {
+  background: rgba(255, 255, 255, 0.9) !important;
+  backdrop-filter: blur(10px) !important;
+  -webkit-backdrop-filter: blur(10px) !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03) !important;
+}
+
+/* 2. Menu Navigasi / Tab Jadi Lebih Modern & Nyaman Disentuh */
+.nav-tab, .tab-btn, .menu-tab, .navItem {
+  border-radius: 20px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease-in-out !important;
+  padding: 8px 16px !important;
+  margin: 0 3px !important;
+}
+
+/* Efek saat tab aktif / disentuh */
+.nav-tab.active, .tab-btn.active, .menu-tab.active, .navItem.active {
+  background-color: #15803d !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 10px rgba(21, 128, 61, 0.25) !important;
+}
 /* 4. Perhalus Kotak Kartu (Card Container) */
 .card, .box, .container-box, div[style*="border"] {
   border-radius: 14px !important;
